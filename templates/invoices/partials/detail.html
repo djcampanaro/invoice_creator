@@ -1,0 +1,10 @@
+<h1>{{ object.invoice_number }} <small><a href="{{ object.get_edit_url }}">Edit</a></small></h1>
+<p>{{ object.client_name }}</p>
+<p>{{ object.invoice_date }}</p>
+<p>{{ object.due_date }}</p>
+
+{% for job in object.get_jobs_children %}
+    <h1>{{ job.date_of_work }}</h1>
+    <p>{{ job.description }}</p>
+    <p>{{ job.hours }}</p>
+{% endfor %}

@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <ul>
+        {% for x in object_list %}
+            <li>{{ x.client_name }}</li>
+        {% endfor %}
+    </ul>
+{% endblock content %}

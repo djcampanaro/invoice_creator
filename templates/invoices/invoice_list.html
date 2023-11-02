@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <ul>
+        {% for x in object_list %}
+            <li><a href="{{ x.get_absolute_url }}">{{ x.invoice_number }}</a> - {{ x.invoice_date }}</li>
+        {% endfor %}
+    </ul>
+{% endblock content %}
