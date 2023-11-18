@@ -42,6 +42,7 @@ class InvoiceListView(ListView):
 
 # @login_required
 def invoice_detail_view(request, id=None):
+    print('who?')
     hx_url = reverse("invoices:hx-detail", kwargs={"id": id})
     context = {
         "hx_url": hx_url
@@ -81,7 +82,7 @@ class ClientListView(ListView):
     model = Client
 
 
-def invoice_create_update_view(request, id=None):
+def invoice_update_view(request, id=None):
     obj = get_object_or_404(Invoice, id=id)
     form = InvoiceForm(request.POST or None, instance=obj)
     context = {

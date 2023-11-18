@@ -50,4 +50,4 @@ class Job(models.Model):
             "parent_id": self.invoice.id,
             "id": self.id,
         }
-        return reverse("invoices:hx-ingredient-detail", kwargs=kwargs)
+        return reverse("invoices:hx-job-detail", kwargs=kwargs)

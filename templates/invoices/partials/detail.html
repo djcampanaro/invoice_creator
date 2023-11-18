@@ -3,8 +3,7 @@
 <p>{{ object.invoice_date }}</p>
 <p>{{ object.due_date }}</p>
 
+<h3>Jobs</h3>
 {% for job in object.get_jobs_children %}
-    <h1>{{ job.date_of_work }}</h1>
-    <p>{{ job.description }}</p>
-    <p>{{ job.hours }}</p>
+    <p>{{ job.date_of_work }} - {{ job.description }} - {{ job.hours }}</p>
 {% endfor %}
