@@ -38,16 +38,22 @@ def home_view(request):
 class InvoiceListView(ListView):
     model = Invoice
 
+def invoice_list_view(request):
+    obj = Invoice.objects.order_by('-invoice_number')
+    context = {
+        'objects': obj,
+    }
+    return render(request, "invoices/invoice-list.html", context)
 
 
 # @login_required
 def invoice_detail_view(request, id=None):
     print('who?')
-    hx_url = reverse("invoices:hx-detail", kwargs={"id": id})
+    hx_url = reverse("invoices:hx-invoice-detail", kwargs={"id": id})
     context = {
         "hx_url": hx_url
     }
-    return render(request, "invoices/invoice_detail.html", context)
+    return render(request, "invoices/detail.html", context)
 
 
 # @login_required
@@ -61,25 +67,62 @@ def invoice_detail_hx_view(request, id=None):
     context = {
         "object": obj
     }
-    return render(request, "invoices/partials/detail.html", context)
+    return render(request, "invoices/partials/invoice-detail.html", context)
+
+
+def new_invoice_number():
+    '''Generates new invoice number based on the last one created'''
+    latest_invoice = Invoice.objects.latest('invoice_number')
+    latest_invoice_num = latest_invoice.invoice_number
+    return latest_invoice_num + 1
 
 
 # @login_required
 def invoice_create_view(request):
     form = InvoiceForm(request.POST or None)
+    invoice_num = new_invoice_number()
+
     context = {
-        "form": form
+        "form": form,
+        "invoice_num": invoice_num
     }
     if form.is_valid():
         obj = form.save(commit=False)
         # obj.user = request.user
+        obj.invoice_number = invoice_num
         obj.save()
         return redirect(obj.get_absolute_url())
     return render(request, "invoices/create-update.html", context)
 
 
-class ClientListView(ListView):
-    model = Client
+# @login_required
+def client_detail_view(request, id=None):
+    hx_url = reverse("invoices:hx-client-detail", kwargs={"id": id})
+    context = {
+        "hx_url": hx_url
+    }
+    return render(request, "invoices/detail.html", context)
+
+
+def client_detail_hx_view(request, id=None):
+    try:
+        obj = Client.objects.get(id=id)
+    except:
+        obj = None
+    if obj is None:
+        return HttpResponse("Not found.")
+    context = {
+        "object": obj
+    }
+    return render(request, "invoices/partials/client-detail.html", context)
+
+
+def client_list_view(request):
+    obj = Client.objects.order_by('client_name')
+    context = {
+        'objects': obj,
+    }
+    return render(request, "invoices/client-list.html", context)
 
 
 def invoice_update_view(request, id=None):

@@ -14,6 +14,15 @@ class Client(models.Model):
 
     def __str__(self):
         return self.client_name
+    
+    def get_client_absolute_url(self):
+        return reverse("invoices:client-detail", kwargs={"id": self.id})
+    
+    def get_hx_url(self):
+        return reverse("invoices:hx-client-detail", kwargs={"id": self.id})
+    
+    def get_invoices_children(self):
+        return self.invoice_set.order_by('-invoice_number')
 
 class Invoice(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
@@ -28,7 +37,7 @@ class Invoice(models.Model):
         return reverse("invoices:detail", kwargs={"id": self.id})
     
     def get_hx_url(self):
-        return reverse("invoices:hx-detail", kwargs={"id": self.id})
+        return reverse("invoices:hx-invoice-detail", kwargs={"id": self.id})
     
     def get_edit_url(self):
         return reverse("invoices:update", kwargs={"id": self.id})
@@ -51,3 +60,8 @@ class Job(models.Model):
             "id": self.id,
         }
         return reverse("invoices:hx-job-detail", kwargs=kwargs)
+    
+    def product_of_hours_and_rate(self):
+        total = float(self.hours) * float(self.invoice.client.rate)
+        return f'{total:.2f}'
+        # return self.hours

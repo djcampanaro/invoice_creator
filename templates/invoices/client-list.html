@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <ul>
+        {% for client in objects %}
+            <li><a href="{{ client.get_client_absolute_url }}">{{ client.client_name }}</a></li>
+        {% endfor %}
+    </ul>
+{% endblock content %}

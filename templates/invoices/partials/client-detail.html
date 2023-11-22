@@ -1,0 +1,6 @@
+<p>{{ object.client_name }}</p>
+<p>{{ object.client_account_number }}</p>
+
+{% for invoice in object.get_invoices_children %}
+    <p><a href="{{ invoice.get_absolute_url }}">{{ invoice.invoice_number }}</a> - {{ invoice.invoice_date }}</p>
+{% endfor %}

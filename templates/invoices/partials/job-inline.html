@@ -1,4 +1,4 @@
 <div id="job-{{ object.id }}">
-    {{ object.date_of_work }} {{ object.description }} - {{ object.hours }}
-    <button hx-trigger="click" hx-get="{{ object.get_hx_edit_url }}" hx-target="#ingredient-{{ object.id }}">Edit</button>
+    {{ object.date_of_work }} - {{ object.description }} - {{ object.hours }}
+    <button hx-trigger="click" hx-get="{{ object.get_hx_edit_url }}" hx-target="#job-{{ object.id }}">Edit</button>
 </div>

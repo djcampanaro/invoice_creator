@@ -1,4 +1,6 @@
+from datetime import date, timedelta
 from django import forms
+from django.forms.widgets import NumberInput, DateInput
 
 from .models import Invoice, Job
 
@@ -11,21 +13,28 @@ class InvoiceForm(forms.ModelForm):
     # description = forms.CharField(widget=forms.Textarea(attrs={"rows": "3"}))
     class Meta:
         model = Invoice
-        fields = ['client', 'invoice_number', 'invoice_date', 'due_date']
+        fields = ['client', 'invoice_date', 'due_date']
+        widgets = {
+            'invoice_date': DateInput(attrs={
+                'placeholder': date.today()
+            }),
+            'due_date': DateInput(attrs={
+                'placeholder': date.today() + timedelta(days=30)
+            })
+        }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        for field in self.fields:
-            print(field)
-            new_data = {
-                "placeholder": f'Invoice {str(field)}',
-                "class": 'form-control',
-            }
-            self.fields[str(field)].widget.attrs.update(new_data)
-        # self.fields['name'].label = ''
-        # self.fields['name'].widget.attrs.update({'class': 'form-control-2'})
-        self.fields['client'].widget.attrs.update({'rows': '2'})
-        self.fields['invoice_number'].widget.attrs.update({'rows': '4'})
+    # def __init__(self, *args, **kwargs):
+    #     super().__init__(*args, **kwargs)
+    #     for field in self.fields:
+    #         new_data = {
+    #             "placeholder": f'Invoice {str(field)}{latest_invoice_num + 1}',
+    #             "class": 'form-control',
+    #         }
+    #         self.fields[str(field)].widget.attrs.update(new_data)
+    #     # self.fields['name'].label = ''
+    #     # self.fields['name'].widget.attrs.update({'class': 'form-control-2'})
+    #     self.fields['client'].widget.attrs.update({'rows': '2'})
+    #     self.fields['invoice_number'].widget.attrs.update({'rows': '4'})
 
 
 class JobForm(forms.ModelForm):
