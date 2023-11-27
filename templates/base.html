@@ -18,14 +18,46 @@
         .htmx-request .htmx-inverted-indicator {
             display: none;
         }
+        table, th, td {
+            border: 1px solid gray;
+            border-collapse: collapse;
+            padding: 3px 5px;
+        }
+        td {
+            width: 1px;
+            white-space: nowrap;
+        }
+        tr:hover {
+            background-color: #D6EEEE;
+        }
+        td:nth-child(1) {
+            padding-right: 10px;
+        }
+        td:nth-child(3) {
+            text-align: right;
+        }
+        td:nth-child(4) {
+            text-align: right;
+        }
+        td:nth-child(5) {
+            padding-left: 10px;
+            text-align: right;
+        }
+        .table-border-hidden {
+            border-left: hidden; 
+            border-right: hidden; 
+            border-bottom: hidden;
+        }
+        .table-suffix {
+            font-weight: bold;
+            text-align: right;
+        }
+
     </style>
 </head>
 <body>
     <h1>Invoice Creator!</h1>
-    <form action="/invoices/">
-        <input type="text" name="q" />
-        <input type="submit" />
-    </form>
+    {% include 'search/search-form.html' %}
     {% block content %}
     {% endblock %}
 </body>

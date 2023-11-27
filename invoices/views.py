@@ -6,11 +6,11 @@ from django.urls import reverse
 from django.views.generic import (DetailView, ListView)
 
 import random
-from .forms import InvoiceForm, JobForm
+from .forms import ClientForm, InvoiceForm, JobForm
 from .models import Client, Invoice, Job
 
 
-# @login_required
+@login_required
 def home_view(request):
     # random_id = random.randint(1, 2)
     # article_obj = Article.objects.get(id=random_id)
@@ -38,6 +38,8 @@ def home_view(request):
 class InvoiceListView(ListView):
     model = Invoice
 
+
+@login_required
 def invoice_list_view(request):
     obj = Invoice.objects.order_by('-invoice_number')
     context = {
@@ -46,9 +48,8 @@ def invoice_list_view(request):
     return render(request, "invoices/invoice-list.html", context)
 
 
-# @login_required
+@login_required
 def invoice_detail_view(request, id=None):
-    print('who?')
     hx_url = reverse("invoices:hx-invoice-detail", kwargs={"id": id})
     context = {
         "hx_url": hx_url
@@ -56,7 +57,7 @@ def invoice_detail_view(request, id=None):
     return render(request, "invoices/detail.html", context)
 
 
-# @login_required
+@login_required
 def invoice_detail_hx_view(request, id=None):
     try:
         obj = Invoice.objects.get(id=id)
@@ -65,9 +66,10 @@ def invoice_detail_hx_view(request, id=None):
     if obj is None:
         return HttpResponse("Not found.")
     context = {
-        "object": obj
+        "object": obj,
+        "jobs": "jobs"
     }
-    return render(request, "invoices/partials/invoice-detail.html", context)
+    return render(request, "invoices/partials/detail.html", context)
 
 
 def new_invoice_number():
@@ -77,25 +79,46 @@ def new_invoice_number():
     return latest_invoice_num + 1
 
 
-# @login_required
+@login_required
 def invoice_create_view(request):
     form = InvoiceForm(request.POST or None)
     invoice_num = new_invoice_number()
 
     context = {
         "form": form,
-        "invoice_num": invoice_num
+        "invoice_num": invoice_num,
     }
     if form.is_valid():
         obj = form.save(commit=False)
         # obj.user = request.user
         obj.invoice_number = invoice_num
         obj.save()
+        if request.htmx:
+            headers = {
+                "HX-Redirect": obj.get_absolute_url()
+            }
+            return HttpResponse("Created", headers=headers)
         return redirect(obj.get_absolute_url())
     return render(request, "invoices/create-update.html", context)
 
 
-# @login_required
+@login_required
+def client_create_view(request):
+    form = ClientForm(request.POST or None)
+    context = {
+        "form": form,
+    }
+    if form.is_valid():
+        print('ok')
+        obj = form.save(commit=False)
+        obj.user = request.user
+        obj.save()
+        id = obj.id
+        return redirect(obj.get_absolute_url())
+    return render(request, "invoices/client-create.html", context)
+
+
+@login_required
 def client_detail_view(request, id=None):
     hx_url = reverse("invoices:hx-client-detail", kwargs={"id": id})
     context = {
@@ -104,6 +127,20 @@ def client_detail_view(request, id=None):
     return render(request, "invoices/detail.html", context)
 
 
+@login_required
+def client_delete_view(request, id=None):
+    obj = get_object_or_404(Client, id=id, user=request.user)
+    if request.method == "POST":
+        obj.delete()
+        success_url = reverse('invoices:')
+        return redirect("/clients")
+    context = {
+        "object": obj
+    }
+    return render(request, "invoices/detail.html", context)
+
+
+@login_required
 def client_detail_hx_view(request, id=None):
     try:
         obj = Client.objects.get(id=id)
@@ -112,11 +149,13 @@ def client_detail_hx_view(request, id=None):
     if obj is None:
         return HttpResponse("Not found.")
     context = {
-        "object": obj
+        "object": obj,
+        "invoice": "invoice"
     }
-    return render(request, "invoices/partials/client-detail.html", context)
+    return render(request, "invoices/partials/detail.html", context)
 
 
+@login_required
 def client_list_view(request):
     obj = Client.objects.order_by('client_name')
     context = {
@@ -125,11 +164,32 @@ def client_list_view(request):
     return render(request, "invoices/client-list.html", context)
 
 
+@login_required
+def client_update_view(request, id=None):
+    obj = get_object_or_404(Client, id=id)
+    form = ClientForm(request.POST or None, instance=obj)
+    context = {
+        "form": form,
+        "object": obj
+    }
+    if form.is_valid():
+        form.save()
+        context['message'] = 'Data saved.'
+    if request.htmx:
+        return render(request, "invoices/partials/client-detail.html", context)
+    return render(request, "invoices/create-update.html", context)
+
+
+@login_required
 def invoice_update_view(request, id=None):
     obj = get_object_or_404(Invoice, id=id)
     form = InvoiceForm(request.POST or None, instance=obj)
+    new_job_url = reverse("invoices:hx-job-create", kwargs={"parent_id": obj.id})
+    if len(obj.job_set.all()) >= 8:
+        new_job_url = None
     context = {
         "form": form,
+        "new_job_url": new_job_url,
         "object": obj
     }
     if form.is_valid():
@@ -139,6 +199,8 @@ def invoice_update_view(request, id=None):
         return render(request, "invoices/partials/forms.html", context)
     return render(request, "invoices/create-update.html", context)
 
+
+@login_required
 def job_update_hx_view(request, parent_id=None, id=None):
     if not request.htmx:
         raise Http404
@@ -156,16 +218,23 @@ def job_update_hx_view(request, parent_id=None, id=None):
         except:
             instance = None
     form = JobForm(request.POST or None, instance=instance)
+    url = reverse("invoices:hx-job-create", kwargs={"parent_id": parent_obj.id})
+    if instance:
+        url = instance.get_hx_edit_url()
+    # if len(parent_obj.job_set.all()) >= 8:
+    #     url = None
+    print(url)
     context = {
         "form": form,
-        "object": instance
+        "object": instance,
+        "url": url
     }
     if form.is_valid():
         new_obj = form.save(commit=False)
         if instance is None:
             new_obj.invoice = parent_obj
         new_obj.save()
-        context['object'] = context
+        context['object'] = new_obj
         return render(request, "invoices/partials/job-inline.html", context)
-    return render(request, "invoices/partials/job-inline.html", context)
+    return render(request, "invoices/partials/job-form.html", context)
 

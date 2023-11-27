@@ -3,9 +3,12 @@ from django.urls import path
 from .views import (
     home_view,
     invoice_create_view,
+    client_create_view,
+    client_delete_view,
     client_detail_view,
     client_detail_hx_view,
     client_list_view,
+    client_update_view,
     invoice_detail_view,
     invoice_list_view,
     invoice_update_view,
@@ -25,5 +28,8 @@ urlpatterns = [
     path('invoices/<int:id>/update/', invoice_update_view, name='update'),
     path('clients/', client_list_view, name='clients'),
     path("clients/hx/<int:id>/", client_detail_hx_view, name='hx-client-detail'),
+    path('clients/<int:id>/delete/', client_delete_view, name='client-delete'),
     path('clients/<int:id>/', client_detail_view, name='client-detail'),
+    path('clients/<int:id>/update/', client_update_view, name='client-update'),
+    path('clients/create/', client_create_view, name='client-create'),
 ]

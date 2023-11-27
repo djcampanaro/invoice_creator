@@ -1,6 +1,7 @@
-<form action="." method="POST" hx-post="." hx-swap="outerHTML">
+<div id="job-container">
+<form action="." method="POST" hx-post="." hx-swap="outerHTML" hx-trigger="{% if form.instance.id %}change delay:500ms,{% endif %} submit">
     {% csrf_token %}
-    <h3>Invoice: {{ invoice_num }}</h3>
+    <h2>Invoice: {% if object %}{{ object.invoice_number }}{% else %}{{ invoice_num }}{% endif %}</h2>
     {% for field in form %}
         <div class="{% if field.field.required %}{{ form.required_css_class }}{% endif %}">
             {{ field.errors }}
@@ -18,3 +19,4 @@
         <p>{{ message }}</p>
     {% endif %}
 </form>
+</div>

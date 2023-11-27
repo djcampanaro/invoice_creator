@@ -14,37 +14,15 @@
 <div style="margin-top: 30px;">
     {% include 'invoices/partials/forms.html' %}
 
-    <h3>Jobs</h3>
+    <h2>Jobs</h2>
     {% for job in object.get_jobs_children %}
         {% include 'invoices/partials/job-inline.html' with object=job %}
     {% endfor %}
+    {% if new_job_url %}
+        <div id="ingredient-create"></div>
+        <button hx-get="{{ new_job_url }}" hx-trigger="click" hx-target="#ingredient-create" 
+        hx-swap="beforeend">Add Job</button>
+    {% endif %}
 </div>
-
-<script>
-    document.addEventListener('click', (event)=>{
-        if(event.target == 'add-more') {
-            add_new_form(event)
-        }
-    })
-
-    function add_new_form (event) {
-        if (event) {
-            event.preventDefault()
-        }
-
-        const totalNewForms = document.getElementById('id_form-TOTAL_FORMS')
-        const currentIngredientForms = document.getElementsByClassName('ingredient-form')
-        const currentFormCount = currentIngredientForms.length // + 1
-        const formCopyTarget = document.getElementById('ingredient-form-list')
-        const copyEmtpyFormEl = document.getElementById('empty-form').cloneNode(true)
-        copyEmtpyFormEl.setAttribute('class', 'ingredient-form')
-        copyEmtpyFormEl.setAttribute('id', `form-${currentFormCount}`)
-        const regex = new RegExp('__prefix__', 'g')
-        copyEmtpyFormEl.innerHTML = copyEmtpyFormEl.innerHTML.replace(regex, currentFormCount)
-        totalNewForms.setAttribute('value', currentFormCount + 1)
-        // add new empty form element to our html form
-        formCopyTarget.append(copyEmtpyFormEl)
-    }
-</script>
 
 {% endblock content %}
