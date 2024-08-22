@@ -1,0 +1,14 @@
+<div id="job-{{ object.id }}">
+    {{ object.date_of_work }} - {{ object.description }} - {{ object.hours }}
+    <button hx-trigger="click" hx-get="{{ object.get_hx_edit_url }}" hx-target="#job-{{ object.id }}">Edit</button>
+</div>
+<!-- <div id="job-{{ object.id }}">
+    <tr>
+        <td>{{ job.date_of_work }}</td>
+        <td>{{ job.description }}</td>
+        <td>{{ job.hours }}</td>
+        <td>{{ job.invoice.client.rate }}</td>
+        <td>{{ job.product_of_hours_and_rate }}</td>
+        <td style="border: hidden;"><button hx-trigger="click" hx-get="{{ object.get_hx_edit_url }}" hx-target="#job-{{ object.id }}">Edit</button></td>
+    </tr>
+</div> -->

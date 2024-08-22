@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h3><a href="{% url 'invoices:clients' %}">Clients</a></h3>
+    <h3><a href="{% url 'invoices:invoices' %}">Invoices</a></h3>
+    <h3><a href="{% url 'invoices:create' %}">Create New Invoice</a></h3>
+{% endblock content %}

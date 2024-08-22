@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div>
+        <form action="{% url 'invoices:client-create' %}">
+            <button type="submit">New Client</button>
+        </form>
+    </div>
+    <ul>
+        {% for client in objects %}
+            <li><a href="{{ client.get_absolute_url }}">{{ client.client_name }}</a></li>
+        {% endfor %}
+    </ul>
+{% endblock content %}

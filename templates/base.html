@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://unpkg.com/htmx.org@1.9.4"></script>
+    <style>
+        .disp {
+            display: flex;
+        }
+        .space {
+            margin-right: 10px;
+        }
+        .htmx-indicator {
+            display: none;
+        }
+        .htmx-request .htmx-indicator {
+            display: inline;
+        }
+        .htmx-inverted-indicator {
+            display: inline;
+        }
+        .htmx-request .htmx-inverted-indicator {
+            display: none;
+        }
+        table, th, td {
+            border: 1px solid gray;
+            border-collapse: collapse;
+            padding: 3px 5px;
+        }
+        td {
+            width: 1px;
+            white-space: nowrap;
+        }
+        tr:hover {
+            background-color: #D6EEEE;
+        }
+        td:nth-child(1) {
+            padding-right: 10px;
+        }
+        td:nth-child(3) {
+            text-align: right;
+        }
+        td:nth-child(4) {
+            text-align: right;
+        }
+        td:nth-child(5) {
+            padding-left: 10px;
+            text-align: right;
+        }
+        .table-border-hidden {
+            border-left: hidden; 
+            border-right: hidden; 
+            border-bottom: hidden;
+        }
+        .table-suffix {
+            font-weight: bold;
+            text-align: right;
+        }
+
+    </style>
+</head>
+<body>
+    <h1>Invoice Creator</h1>
+    {% include 'search/search-form.html' %}
+    <div class="row disp">
+        <h5 class="space"><a href="{% url 'invoices:home' %}">Home</a></h5>
+        <h5 class="space"><a href="{% url 'invoices:clients' %}">Clients</a></h5>
+        <h5 class="space"><a href="{% url 'invoices:invoices' %}">Invoices</a></h5>
+        <h5 class="space"><a href="{% url 'invoices:create' %}">Create New Invoice</a></h5>
+    </div>
+    {% block content %}
+    {% endblock %}
+</body>
+</html>

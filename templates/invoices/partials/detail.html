@@ -1,0 +1,45 @@
+<h2>{{ object.get_title }}</h2>
+{% if object.get_edit_url %}
+    <small>
+        <a href="{{ object.get_edit_url }}"><button>Edit</button></a>
+    </small>
+{% endif %}
+{% for key, value in object.get_content.items %}
+    <p>{{ key }}{{ value }}</p>
+{% endfor %}
+
+{% if invoice %}
+    <div>
+        <h4>Related Invoices:</h4>
+        {% for invoice in object.get_invoices_children %}
+            <p><a href="{{ invoice.get_absolute_url }}">{{ invoice.invoice_number }}</a> - {{ invoice.invoice_date }}</p>
+        {% endfor %}
+    </div>
+{% elif jobs %}
+    <h3>Jobs</h3>
+    <table width="500px">
+        <tr>
+            <th>Date</th>
+            <th>Description</th>
+            <th>Hours</th>
+            <th>Rate</th>
+            <th>Totals</th>
+        </tr>
+        {% for job in object.get_jobs_children %}
+            <tr>
+                <td>{{ job.date_of_work }}</td>
+                <td>{{ job.description }}</td>
+                <td>{{ job.hours }}</td>
+                <td>${{ object.client.rate }}</td>
+                <td>${{ job.product_of_hours_and_rate }}</td>
+            </tr>
+        {% endfor %}
+        <tr>
+            <td class="table-border-hidden"></td>
+            <td class="table-border-hidden table-suffix" style="text-align: right;">Total Hours:</td>
+            <td class="table-border-hidden">{{ object.get_total_hours }}</td>
+            <td class="table-border-hidden table-suffix">Total:</td>
+            <td class="table-border-hidden">${{ object.get_total_amount }}</td>
+        </tr>
+    </table>
+{% endif %}
